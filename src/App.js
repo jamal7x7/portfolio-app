@@ -74,6 +74,7 @@ export default () => {
 
     let xj = xb - rb*Math.cos(theta)/Math.cos(tho)
     let yj = yb + rb*Math.cos(theta)/Math.cos(tho)
+    
     setCoo({
       ...coo, 
       
@@ -115,36 +116,45 @@ export default () => {
                   // fill="#fa8072" />
                   fill="#61DAFB"/>
                 
+
+                <path 
+                  className='R1R2D2D1' 
+                  d={`M ${coo.C1.x} ${coo.C1.y} 
+                  L ${coo.C2.x} ${coo.C2.y}
+                  C ${coo.I.x} ${coo.I.y} ${coo.J.x} ${coo.J.y} ${coo.D2.x} ${coo.D2.y}
+                  L ${coo.D1.x} ${coo.D1.y}
+                  C  ${coo.J.x} ${coo.J.y} ${coo.I.x} ${coo.I.y} ${coo.C1.x} ${coo.C1.y}
+                  `}
+                  stroke='#ffffffA9' 
+                  fill='#61DAFB' />
+
+                <path 
+                  className='C2I' 
+                  d={`M ${coo.C2.x} ${coo.C2.y} 
+                      L ${coo.I.x} ${coo.I.y}`}
+                  stroke='#ffff00a0' 
+                  fill='none' />
+
                 <path 
                   className='AB' 
                   d={`M ${coo.B.x} ${coo.B.y} 
                       L ${coo.A.x} ${coo.A.y}`}
-                  stroke='#ffffff00' 
+                  stroke='#ffffffa0' 
                   fill='none' />
 
                 <path 
                   className='A1A2' 
                   d={`M ${coo.A1.x} ${coo.A1.y} 
-                      L ${coo.A2.x} ${coo.A2.y}`}
-                  stroke='#ffffff00' 
+                  L ${coo.A2.x} ${coo.A2.y}`}
+                  stroke='#ffffffa0' 
                   fill='none' />
 
-                <path 
-                  className='R1R2D2D1' 
-                  d={`M ${coo.C1.x} ${coo.C1.y} 
-                      L ${coo.C2.x} ${coo.C2.y}
-                      C ${coo.I.x} ${coo.I.y} ${coo.J.x} ${coo.J.y} ${coo.D2.x} ${coo.D2.y}
-                      L ${coo.D1.x} ${coo.D1.y}
-                      C  ${coo.J.x} ${coo.J.y} ${coo.I.x} ${coo.I.y} ${coo.C1.x} ${coo.C1.y}
-                    `}
-                  stroke='#ffffffA9' 
-                  fill='#61DAFB' />
                   
                 <path 
                   className='B1B2' 
                   d={`M ${coo.B1.x} ${coo.B1.y} 
                       L ${coo.B2.x} ${coo.B2.y}`}
-                  stroke='#ffffff00' 
+                  stroke='#ffffffa0' 
                   fill='none' />
 
                 <path 
