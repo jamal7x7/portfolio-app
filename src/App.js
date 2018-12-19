@@ -135,13 +135,38 @@ export default () => {
 					/>
 
 					<circle
+						className="drop"
+						cx={coo.A.x}
+						cy={coo.A.y}
+						r={coo.R.rb}
+						fill="#61DAFB">
+					
+						<animate
+							attributeType="XML"
+							attributeName="cy"
+							from={coo.A.x}
+							to="1200"
+							dur="1s"
+							repeatCount="indefinite"
+						/>
+					</circle>
+
+					<circle
 						className="B"
 						cx={coo.B.x}
 						cy={coo.B.y}
 						r={coo.R.rb + 100 * r}
 						// fill="#fa8072" />
-						fill="#61DAFB"
-					/>
+						fill="#61DAFB">
+						<animate
+							attributeType="XML"
+							attributeName="x"
+							from="-100"
+							to="120"
+							dur="10s"
+							repeatCount="indefinite"
+						/>
+					</circle>
 
 					<path
 						className="R1R2D2D1"
@@ -158,12 +183,12 @@ export default () => {
 						stroke="#fff00f"
 						fill="#fff00066"
 					/>
-					<g opacity="10">
+					<g opacity="0">
 						<path
 							className="C2I"
 							d={`M ${coo.C2.x} ${coo.C2.y} 
                       L ${coo.I.x} ${coo.I.y}`}
-							stroke="#ffff00a0"
+							stroke="#00ff00a0"
 							fill="none"
 						/>
 
