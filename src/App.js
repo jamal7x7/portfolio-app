@@ -39,7 +39,13 @@ export default () => {
 		D2: { x: 0, y: 0 },
 
 		I: { x: 0, y: 0 },
-		J: { x: 0, y: 0 }
+		J: { x: 0, y: 0 },
+
+		I1: { x: 0, y: 0 },
+		I2: { x: 0, y: 0 },
+
+		J1: { x: 0, y: 0 },
+		J2: { x: 0, y: 0 }
 	})
 	let svgRef = useRef()
 	const handleChange = e => {
@@ -60,8 +66,10 @@ export default () => {
 
 		let H = Math.sqrt(X ** 2 + Y ** 2)
 
-		let rho = 1.3 * Math.asin(rb / H)
-		let tho = 1.3 * Math.asin(ra / H)
+		let rho = 1 * Math.asin(rb / H) + 0.2
+		let tho = 1 * Math.asin(ra / H) + 0.2
+
+		let k = ((0.3 * H) / 100) ** 2
 
 		let xa1 = xa + ra * Math.sin(theta)
 		let ya1 = ya - ra * Math.cos(theta)
@@ -93,6 +101,18 @@ export default () => {
 		let xj = xb - (rb * Math.cos(theta)) / Math.cos(tho)
 		let yj = yb - (rb * Math.sin(theta)) / Math.cos(tho)
 
+		let xi1 = k * (xi - xc1) + xc1
+		let yi1 = k * (yi - yc1) + yc1
+
+		let xi2 = k * (xi - xc2) + xc2
+		let yi2 = k * (yi - yc2) + yc2
+
+		let xj1 = k * (xj - xd1) + xd1
+		let yj1 = k * (yj - yd1) + yd1
+
+		let xj2 = k * (xj - xd2) + xd2
+		let yj2 = k * (yj - yd2) + yd2
+
 		function precise(x) {
 			return Number.parseFloat(x).toFixed(1)
 		}
@@ -100,6 +120,7 @@ export default () => {
 		setCoo({
 			...coo,
 			t: time,
+			k: k,
 			A: { x: precise(xa), y: precise(ya) },
 			B: { x: precise(xb), y: precise(yb) },
 
@@ -116,7 +137,13 @@ export default () => {
 			D2: { x: precise(xd2), y: precise(yd2) },
 
 			I: { x: precise(xi), y: precise(yi) },
-			J: { x: precise(xj), y: precise(yj) }
+			J: { x: precise(xj), y: precise(yj) },
+
+			I1: { x: precise(xi1), y: precise(yi1) },
+			I2: { x: precise(xi2), y: precise(yi2) },
+
+			J1: { x: precise(xj1), y: precise(yj1) },
+			J2: { x: precise(xj2), y: precise(yj2) }
 		})
 	}
 
@@ -138,6 +165,7 @@ export default () => {
 
 				<h2>Time:{time} </h2>
 				<h2>Time:{coo.t} </h2>
+				<h2>k:{coo.k} </h2>
 				{/* <button onClick={handleStop}>Stop</button> */}
 			</div>
 			<svg
@@ -207,43 +235,43 @@ export default () => {
 						className="R1R2D2D1"
 						d={`M ${coo.C1.x} ${coo.C1.y} 
                   L ${coo.C2.x} ${coo.C2.y}
-                  C ${coo.I.x} ${coo.I.y} ${coo.J.x} ${coo.J.y} ${coo.D2.x} ${
-							coo.D2.y
-						}
+                  C ${coo.I2.x} ${coo.I2.y} ${coo.J2.x} ${coo.J2.y} ${
+							coo.D2.x
+						} ${coo.D2.y}
                   L ${coo.D1.x} ${coo.D1.y}
-                  C  ${coo.J.x} ${coo.J.y} ${coo.I.x} ${coo.I.y} ${coo.C1.x} ${
-							coo.C1.y
-						}
+                  C  ${coo.J1.x} ${coo.J1.y} ${coo.I1.x} ${coo.I1.y} ${
+							coo.C1.x
+						} ${coo.C1.y}
                   `}
 						// stroke="#fff00f"
 						fill="url(#radialGradient-2)"
 					/>
-					<g opacity="100">
+					<g opacity="0">
 						<path
-							className="C2I"
+							className="C2I2"
 							d={`M ${coo.C2.x} ${coo.C2.y} 
-                      L ${coo.I.x} ${coo.I.y}`}
-							stroke="#00ff00"
+                      L ${coo.I2.x} ${coo.I2.y}`}
+							stroke="red"
 							fill="none"
 						/>
 						<path
-							className="C1I"
+							className="C1I1"
 							d={`M ${coo.C1.x} ${coo.C1.y} 
-                      L ${coo.I.x} ${coo.I.y}`}
+                      L ${coo.I1.x} ${coo.I1.y}`}
 							stroke="#00ff00"
 							fill="none"
 						/>
 						<path
-							className="D2I"
+							className="D2I2"
 							d={`M ${coo.D2.x} ${coo.D2.y} 
-                      L ${coo.J.x} ${coo.J.y}`}
+                      L ${coo.J2.x} ${coo.J2.y}`}
 							stroke="#00fff0"
 							fill="none"
 						/>
 						<path
-							className="C1I"
+							className="C1I1"
 							d={`M ${coo.D1.x} ${coo.D1.y} 
-                      L ${coo.J.x} ${coo.J.y}`}
+                      L ${coo.J1.x} ${coo.J1.y}`}
 							stroke="#00fff0"
 							fill="none"
 						/>
