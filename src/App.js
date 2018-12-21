@@ -7,19 +7,21 @@ import React, {
 } from 'react'
 import './App.sass'
 
-let counter = 0
-function up() {
-	counter = counter + 0.1
-	//console.log('time', counter)
-}
-
-setInterval(() => {
-	up()
-}, 17)
+const begining = Date.now()
 
 export default () => {
+	let [stop, setStop] = useState(false)
+
+	let [time, setTime] = useState(0)
+
+	useEffect(() => {
+		let tms = (Date.now() - begining) / 100
+		setTime(Number.parseFloat(tms).toFixed(0))
+	})
+
 	const [coo, setCoo] = useState({
 		R: { ra: 100, rb: 50 },
+		t: time,
 
 		A: { x: 420, y: 300 },
 		B: { x: 0, y: 0 },
@@ -41,13 +43,13 @@ export default () => {
 	})
 	let svgRef = useRef()
 	const handleChange = e => {
-		e.persist()
+		e.preventDefault()
 		let bound = svgRef.current.getBoundingClientRect()
 
 		let xb = e.clientX - bound.left
 		let yb = e.clientY - bound.top
-		let xa = coo.A.x
-		let ya = coo.A.y
+		let xa = 600
+		let ya = 400
 
 		let ra = coo.R.ra
 		let rb = coo.R.rb
@@ -58,8 +60,8 @@ export default () => {
 
 		let H = Math.sqrt(X ** 2 + Y ** 2)
 
-		let rho = 1 * Math.asin(rb / H)
-		let tho = 1 * Math.asin(ra / H)
+		let rho = 1.3 * Math.asin(rb / H)
+		let tho = 1.3 * Math.asin(ra / H)
 
 		let xa1 = xa + ra * Math.sin(theta)
 		let ya1 = ya - ra * Math.cos(theta)
@@ -91,56 +93,89 @@ export default () => {
 		let xj = xb - (rb * Math.cos(theta)) / Math.cos(tho)
 		let yj = yb - (rb * Math.sin(theta)) / Math.cos(tho)
 
+		function precise(x) {
+			return Number.parseFloat(x).toFixed(1)
+		}
+
 		setCoo({
 			...coo,
+			t: time,
+			A: { x: precise(xa), y: precise(ya) },
+			B: { x: precise(xb), y: precise(yb) },
 
-			A: { x: 300, y: 300 },
-			B: { x: xb, y: yb },
+			A1: { x: precise(xa1), y: precise(ya1) },
+			A2: { x: precise(xa2), y: precise(ya2) },
 
-			A1: { x: xa1, y: ya1 },
-			A2: { x: xa2, y: ya2 },
+			B1: { x: precise(xb1), y: precise(yb1) },
+			B2: { x: precise(xb2), y: precise(yb2) },
 
-			B1: { x: xb1, y: yb1 },
-			B2: { x: xb2, y: yb2 },
+			C1: { x: precise(xc1), y: precise(yc1) },
+			C2: { x: precise(xc2), y: precise(yc2) },
 
-			C1: { x: xc1, y: yc1 },
-			C2: { x: xc2, y: yc2 },
+			D1: { x: precise(xd1), y: precise(yd1) },
+			D2: { x: precise(xd2), y: precise(yd2) },
 
-			D1: { x: xd1, y: yd1 },
-			D2: { x: xd2, y: yd2 },
-
-			I: { x: xi, y: yi },
-			J: { x: xj, y: yj }
+			I: { x: precise(xi), y: precise(yi) },
+			J: { x: precise(xj), y: precise(yj) }
 		})
 	}
-	let r = 0
-	useEffect(() => {
-		r = counter
-	})
+
+	console.log(time)
+	const handleStop = e => {
+		e.preventDefault()
+		setTime(0)
+	}
+
 	return (
 		<div className="App">
+			<div className="stats">
+				<h2>
+					A: ( {coo.A.x}, {coo.A.x} )
+				</h2>
+				<h2>
+					B: ( {coo.B.x}, {coo.B.x} )
+				</h2>
+
+				<h2>Time:{time} </h2>
+				<h2>Time:{coo.t} </h2>
+				{/* <button onClick={handleStop}>Stop</button> */}
+			</div>
 			<svg
 				ref={svgRef}
-				viewBox="0 0 1000 700"
-				height="700"
-				width="1000"
-				onMouseMove={handleChange}>
-				<g>
-					<circle
-						className="A"
-						cx={coo.A.x}
-						cy={coo.A.y}
-						r={coo.R.ra}
-						fill="#61DAFB"
-					/>
+				// viewBox="0 0 1000 700"
+				// height="700"
+				// width="1000"
+				onMouseMove={e => handleChange(e)}>
+				<defs>
+					<radialGradient
+						cx="50%"
+						cy="50%"
+						fx="50%"
+						fy="50%"
+						r="77%"
+						id="radialGradient-1">
+						<stop stop-color="#C86DD7" offset="0%" />
+						<stop stop-color="#877AFF" offset="100%" />
+					</radialGradient>
+					<radialGradient
+						cx="50%"
+						cy="50%"
+						fx="50%"
+						fy="50%"
+						r="77%"
+						id="radialGradient-2">
+						<stop stop-color="#C86DD7" offset="0%" />
+						<stop stop-color="#877AFF" offset="100%" />
+					</radialGradient>
+				</defs>
 
-					<circle
+				<g>
+					{/* <circle
 						className="drop"
 						cx={coo.A.x}
 						cy={coo.A.y}
 						r={coo.R.rb}
-						fill="#61DAFB">
-					
+						fill="#877AFF">
 						<animate
 							attributeType="XML"
 							attributeName="cy"
@@ -149,24 +184,24 @@ export default () => {
 							dur="1s"
 							repeatCount="indefinite"
 						/>
-					</circle>
+					</circle> */}
+
+					<circle
+						className="A"
+						cx={coo.A.x}
+						cy={coo.A.y}
+						r={coo.R.ra}
+						fill="url(#radialGradient-1)"
+					/>
 
 					<circle
 						className="B"
 						cx={coo.B.x}
 						cy={coo.B.y}
-						r={coo.R.rb + 100 * r}
+						r={coo.R.rb}
 						// fill="#fa8072" />
-						fill="#61DAFB">
-						<animate
-							attributeType="XML"
-							attributeName="x"
-							from="-100"
-							to="120"
-							dur="10s"
-							repeatCount="indefinite"
-						/>
-					</circle>
+						fill="url(#radialGradient-1)"
+					/>
 
 					<path
 						className="R1R2D2D1"
@@ -180,15 +215,36 @@ export default () => {
 							coo.C1.y
 						}
                   `}
-						stroke="#fff00f"
-						fill="#fff00066"
+						// stroke="#fff00f"
+						fill="url(#radialGradient-2)"
 					/>
-					<g opacity="0">
+					<g opacity="100">
 						<path
 							className="C2I"
 							d={`M ${coo.C2.x} ${coo.C2.y} 
                       L ${coo.I.x} ${coo.I.y}`}
-							stroke="#00ff00a0"
+							stroke="#00ff00"
+							fill="none"
+						/>
+						<path
+							className="C1I"
+							d={`M ${coo.C1.x} ${coo.C1.y} 
+                      L ${coo.I.x} ${coo.I.y}`}
+							stroke="#00ff00"
+							fill="none"
+						/>
+						<path
+							className="D2I"
+							d={`M ${coo.D2.x} ${coo.D2.y} 
+                      L ${coo.J.x} ${coo.J.y}`}
+							stroke="#00fff0"
+							fill="none"
+						/>
+						<path
+							className="C1I"
+							d={`M ${coo.D1.x} ${coo.D1.y} 
+                      L ${coo.J.x} ${coo.J.y}`}
+							stroke="#00fff0"
 							fill="none"
 						/>
 
