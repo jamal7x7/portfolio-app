@@ -14,14 +14,16 @@ export default () => {
 
 	let [time, setTime] = useState(0)
 
+	let [show, setShow] = useState(1)
+
 	useEffect(() => {
 		let tms = (Date.now() - begining) / 100
-		setTime(Number.parseFloat(tms).toFixed(0))
+		setTime(Number.parseFloat(tms).toFixed(1))
 	})
 
 	const [coo, setCoo] = useState({
-		R: { ra: 100, rb: 50 },
-		t: time,
+		R: { ra: 200, rb: 50 },
+		// t: time,
 
 		A: { x: 420, y: 300 },
 		B: { x: 0, y: 0 },
@@ -48,14 +50,23 @@ export default () => {
 		J2: { x: 0, y: 0 }
 	})
 	let svgRef = useRef()
-	const handleChange = e => {
-		e.preventDefault()
-		let bound = svgRef.current.getBoundingClientRect()
+	useEffect(() => {
+		// const handleChange = e => {
+		// e.preventDefault()
+		// let bound = svgRef.current.getBoundingClientRect()
 
-		let xb = e.clientX - bound.left
-		let yb = e.clientY - bound.top
-		let xa = 600
-		let ya = 400
+		let hx = 500
+		let hy = 250
+		let phi = 0.2 * time
+		let phi2 = 0.25 * time
+
+		let xa = 600 + 30 * Math.cos(phi2 + 10)
+		let ya = 400 + 50 * Math.sin(phi2 + 70)
+
+		let xb = xa + hx * Math.cos(phi)
+		let yb = ya + hy * Math.sin(phi)
+		// let xb = e.clientX - bound.left
+		// let yb = e.clientY - bound.top
 
 		let ra = coo.R.ra
 		let rb = coo.R.rb
@@ -66,10 +77,10 @@ export default () => {
 
 		let H = Math.sqrt(X ** 2 + Y ** 2)
 
-		let rho = 1 * Math.asin(rb / H) + 0.2
+		let rho = 1 * Math.asin(rb / H) + 0.1
 		let tho = 1 * Math.asin(ra / H) + 0.2
 
-		let k = ((0.3 * H) / 100) ** 2
+		let k = (0.003 * H) ** 2
 
 		let xa1 = xa + ra * Math.sin(theta)
 		let ya1 = ya - ra * Math.cos(theta)
@@ -120,7 +131,9 @@ export default () => {
 		setCoo({
 			...coo,
 			t: time,
-			k: k,
+			k: precise(k),
+			H: H,
+
 			A: { x: precise(xa), y: precise(ya) },
 			B: { x: precise(xb), y: precise(yb) },
 
@@ -145,12 +158,16 @@ export default () => {
 			J1: { x: precise(xj1), y: precise(yj1) },
 			J2: { x: precise(xj2), y: precise(yj2) }
 		})
-	}
+	})
 
-	console.log(time)
+	// console.log(time)
 	const handleStop = e => {
 		e.preventDefault()
 		setTime(0)
+	}
+	const handleIsShown = e => {
+		e.preventDefault()
+		show === 0 ? setShow(1) : setShow(0)
 	}
 
 	return (
@@ -164,16 +181,20 @@ export default () => {
 				</h2>
 
 				<h2>Time:{time} </h2>
-				<h2>Time:{coo.t} </h2>
+				{/* <h2>Time:{coo.t} </h2> */}
 				<h2>k:{coo.k} </h2>
-				{/* <button onClick={handleStop}>Stop</button> */}
+				<button onClick={handleStop}>Stop</button>
+				<button onClick={e => handleIsShown(e)}>
+					{show === 1 ? 'Hide' : 'Show'}
+				</button>
 			</div>
 			<svg
 				ref={svgRef}
 				// viewBox="0 0 1000 700"
 				// height="700"
 				// width="1000"
-				onMouseMove={e => handleChange(e)}>
+				// onMouseMove={e => handleChange(e)}
+			>
 				<defs>
 					<radialGradient
 						cx="50%"
@@ -231,29 +252,31 @@ export default () => {
 						fill="url(#radialGradient-1)"
 					/>
 
-					<path
-						className="R1R2D2D1"
-						d={`M ${coo.C1.x} ${coo.C1.y} 
-                  L ${coo.C2.x} ${coo.C2.y}
-                  C ${coo.I2.x} ${coo.I2.y} ${coo.J2.x} ${coo.J2.y} ${
-							coo.D2.x
-						} ${coo.D2.y}
-                  L ${coo.D1.x} ${coo.D1.y}
-                  C  ${coo.J1.x} ${coo.J1.y} ${coo.I1.x} ${coo.I1.y} ${
-							coo.C1.x
-						} ${coo.C1.y}
-                  `}
-						// stroke="#fff00f"
-						fill="url(#radialGradient-2)"
-					/>
-					<g opacity="0">
+					{coo.H <= 370 && (
+						<path
+							className="R1R2D2D1"
+							d={`M ${coo.C1.x} ${coo.C1.y} 
+							L ${coo.C2.x} ${coo.C2.y}
+							C ${coo.I2.x} ${coo.I2.y} ${coo.J2.x} ${coo.J2.y} ${coo.D2.x} ${coo.D2.y}
+							L ${coo.D1.x} ${coo.D1.y}
+							C  ${coo.J1.x} ${coo.J1.y} ${coo.I1.x} ${coo.I1.y} ${coo.C1.x} ${coo.C1.y}
+							`}
+							// stroke="#fff00f"
+							fill="url(#radialGradient-2)"
+						/>
+					)}
+
+					{/* <Moving coo={coo} /> */}
+
+					<g opacity={show}>
 						<path
 							className="C2I2"
 							d={`M ${coo.C2.x} ${coo.C2.y} 
-                      L ${coo.I2.x} ${coo.I2.y}`}
+												L ${coo.I2.x} ${coo.I2.y}`}
 							stroke="red"
 							fill="none"
 						/>
+
 						<path
 							className="C1I1"
 							d={`M ${coo.C1.x} ${coo.C1.y} 
@@ -275,7 +298,6 @@ export default () => {
 							stroke="#00fff0"
 							fill="none"
 						/>
-
 						<path
 							className="AB"
 							d={`M ${coo.B.x} ${coo.B.y} 
@@ -283,7 +305,6 @@ export default () => {
 							stroke="#ffffffa0"
 							fill="none"
 						/>
-
 						<path
 							className="A1A2"
 							d={`M ${coo.A1.x} ${coo.A1.y} 
@@ -291,7 +312,6 @@ export default () => {
 							stroke="#ffffffa0"
 							fill="none"
 						/>
-
 						<path
 							className="B1B2"
 							d={`M ${coo.B1.x} ${coo.B1.y} 
@@ -299,7 +319,6 @@ export default () => {
 							stroke="#ffffffa0"
 							fill="none"
 						/>
-
 						<path
 							d={`M ${coo.A.x} ${coo.A.y} 
                       L ${coo.B.x} ${coo.A.y}
@@ -311,5 +330,23 @@ export default () => {
 				</g>
 			</svg>
 		</div>
+	)
+}
+
+const Moving = ({ coo }) => {
+	return (
+		// {coo.H <= 370 && (
+		<path
+			className="R1R2D2D1"
+			d={`M ${coo.C1.x + 100} ${coo.C1.y + 100} 
+				L ${coo.C2.x} ${coo.C2.y}
+				C ${coo.I2.x} ${coo.I2.y} ${coo.J2.x} ${coo.J2.y} ${coo.D2.x} ${coo.D2.y}
+				L ${coo.D1.x} ${coo.D1.y}
+				C  ${coo.J1.x} ${coo.J1.y} ${coo.I1.x} ${coo.I1.y} ${coo.C1.x} ${coo.C1.y}
+				`}
+			// stroke="#fff00f"
+			fill="url(#radialGradient-2)"
+		/>
+		// )}
 	)
 }
