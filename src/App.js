@@ -10,20 +10,36 @@ import './App.sass'
 const begining = Date.now()
 
 export default () => {
-	let [stop, setStop] = useState(false)
+	let [stop, setStop] = useState(true)
 
 	let [time, setTime] = useState(0)
 
-	let [show, setShow] = useState(1)
+	let [show, setShow] = useState(0)
 
 	useEffect(() => {
 		let tms = (Date.now() - begining) / 100
-		setTime(Number.parseFloat(tms).toFixed(1))
+		stop ? setTime(Number.parseFloat(tms).toFixed(1)) : setTime(time)
+
+		// let myInterval = setInterval(() => {
+		// 	stop === true ? tick() : stopTick()
+		// }, 100)
+
+		// return () => {
+		// 	clearInterval(myInterval)
+		// }
 	})
 
+	function tick() {
+		// setTime(time + 1)
+		console.log('running')
+	}
+	function stopTick() {
+		// setTime(time)
+		console.log('Stoped')
+	}
+
 	const [coo, setCoo] = useState({
-		R: { ra: 200, rb: 50 },
-		// t: time,
+		R: { ra: 150, rb: 50 },
 
 		A: { x: 420, y: 300 },
 		B: { x: 0, y: 0 },
@@ -55,8 +71,8 @@ export default () => {
 		// e.preventDefault()
 		// let bound = svgRef.current.getBoundingClientRect()
 
-		let hx = 500
-		let hy = 250
+		let hx = 350
+		let hy = 200
 		let phi = 0.2 * time
 		let phi2 = 0.25 * time
 
@@ -80,19 +96,24 @@ export default () => {
 		let rho = 1 * Math.asin(rb / H) + 0.1
 		let tho = 1 * Math.asin(ra / H) + 0.2
 
-		let k = (0.003 * H) ** 2
-
+		let k = (0.003 * H) ** 1
 		let xa1 = xa + ra * Math.sin(theta)
 		let ya1 = ya - ra * Math.cos(theta)
 
 		let xa2 = xa - ra * Math.sin(theta)
 		let ya2 = ya + ra * Math.cos(theta)
 
+		let xa3 = xa + ra * Math.cos(theta)
+		let ya3 = ya + ra * Math.sin(theta)
+
 		let xb1 = xb + rb * Math.sin(theta)
 		let yb1 = yb - rb * Math.cos(theta)
 
 		let xb2 = xb - rb * Math.sin(theta)
 		let yb2 = yb + rb * Math.cos(theta)
+
+		let xb3 = xb - rb * Math.cos(theta)
+		let yb3 = yb - rb * Math.sin(theta)
 
 		let xc1 = xa + ra * Math.cos(theta - rho)
 		let yc1 = ya + ra * Math.sin(theta - rho)
@@ -130,7 +151,6 @@ export default () => {
 
 		setCoo({
 			...coo,
-			t: time,
 			k: precise(k),
 			H: H,
 
@@ -139,9 +159,11 @@ export default () => {
 
 			A1: { x: precise(xa1), y: precise(ya1) },
 			A2: { x: precise(xa2), y: precise(ya2) },
+			A3: { x: precise(xa3), y: precise(ya3) },
 
 			B1: { x: precise(xb1), y: precise(yb1) },
 			B2: { x: precise(xb2), y: precise(yb2) },
+			B3: { x: precise(xb3), y: precise(yb3) },
 
 			C1: { x: precise(xc1), y: precise(yc1) },
 			C2: { x: precise(xc2), y: precise(yc2) },
@@ -163,7 +185,7 @@ export default () => {
 	// console.log(time)
 	const handleStop = e => {
 		e.preventDefault()
-		setTime(0)
+		setStop(!stop)
 	}
 	const handleIsShown = e => {
 		e.preventDefault()
@@ -183,7 +205,7 @@ export default () => {
 				<h2>Time:{time} </h2>
 				{/* <h2>Time:{coo.t} </h2> */}
 				<h2>k:{coo.k} </h2>
-				<button onClick={handleStop}>Stop</button>
+				<button onClick={handleStop}>{stop ? 'Stop' : 'Continue'}</button>
 				<button onClick={e => handleIsShown(e)}>
 					{show === 1 ? 'Hide' : 'Show'}
 				</button>
@@ -203,8 +225,8 @@ export default () => {
 						fy="50%"
 						r="77%"
 						id="radialGradient-1">
-						<stop stop-color="#C86DD7" offset="0%" />
-						<stop stop-color="#877AFF" offset="100%" />
+						<stop stopColor="#C86DD7" offset="0%" />
+						<stop stopColor="#877AFF" offset="100%" />
 					</radialGradient>
 					<radialGradient
 						cx="50%"
@@ -213,8 +235,8 @@ export default () => {
 						fy="50%"
 						r="77%"
 						id="radialGradient-2">
-						<stop stop-color="#C86DD7" offset="0%" />
-						<stop stop-color="#877AFF" offset="100%" />
+						<stop stopColor="#C86DD7" offset="0%" />
+						<stop stopColor="#61DAFB" offset="100%" />
 					</radialGradient>
 				</defs>
 
@@ -234,7 +256,6 @@ export default () => {
 							repeatCount="indefinite"
 						/>
 					</circle> */}
-
 					<circle
 						className="A"
 						cx={coo.A.x}
@@ -242,7 +263,6 @@ export default () => {
 						r={coo.R.ra}
 						fill="url(#radialGradient-1)"
 					/>
-
 					<circle
 						className="B"
 						cx={coo.B.x}
@@ -251,23 +271,30 @@ export default () => {
 						// fill="#fa8072" />
 						fill="url(#radialGradient-1)"
 					/>
+					<circle
+						className="underB"
+						cx={coo.B.x}
+						cy={coo.B.y}
+						r={coo.R.rb}
+						// fill="#61DAFB"
+						fill="url(#radialGradient-2)"
+						opacity={coo.k}
+					/>
 
 					{coo.H <= 370 && (
 						<path
 							className="R1R2D2D1"
 							d={`M ${coo.C1.x} ${coo.C1.y} 
-							L ${coo.C2.x} ${coo.C2.y}
+							Q ${coo.A3.x} ${coo.A3.y} ${coo.C2.x} ${coo.C2.y}
 							C ${coo.I2.x} ${coo.I2.y} ${coo.J2.x} ${coo.J2.y} ${coo.D2.x} ${coo.D2.y}
-							L ${coo.D1.x} ${coo.D1.y}
-							C  ${coo.J1.x} ${coo.J1.y} ${coo.I1.x} ${coo.I1.y} ${coo.C1.x} ${coo.C1.y}
+							Q ${coo.B3.x} ${coo.B3.y} ${coo.D1.x} ${coo.D1.y}
+							C ${coo.J1.x} ${coo.J1.y} ${coo.I1.x} ${coo.I1.y} ${coo.C1.x} ${coo.C1.y}
 							`}
 							// stroke="#fff00f"
-							fill="url(#radialGradient-2)"
+							fill="url(#radialGradient-1)"
 						/>
 					)}
-
 					{/* <Moving coo={coo} /> */}
-
 					<g opacity={show}>
 						<path
 							className="C2I2"

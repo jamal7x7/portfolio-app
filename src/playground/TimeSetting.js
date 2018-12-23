@@ -15,3 +15,10 @@
 // function stopTick() {
 // 	setTime(time)
 // }
+
+/////////////////////////////////////////////////////////////////////:::
+
+// useEffect(() => {
+//   let tms = (Date.now() - begining) / 100
+//   stop ? setTime(Number.parseFloat(tms).toFixed(1)) : setTime(time)
+// })
