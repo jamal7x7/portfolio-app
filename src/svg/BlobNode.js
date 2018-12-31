@@ -10,7 +10,7 @@ export default ({ show, stop }) => {
 
 	useEffect(() => {
 		let tms = (Date.now() - begining) / 150
-		stop ? setTime(Number.parseFloat(tms).toFixed(3Ï)) : setTime(time)
+		stop ? setTime(Number.parseFloat(tms).toFixed(3)) : setTime(time)
 	})
 
 	const [coo, setCoo] = useState({
